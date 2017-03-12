@@ -10,5 +10,10 @@ Real server, which is built by this project, is running on ***Google Cloude Plat
 Computing Engine***. If you want to test the real server, add [kakao-scheduler](http://plus.kakao.com/home/oojk1uqx)
 to your [KakaoTalk](http://www.kakao.com/talk/) account (kakao-scheduler link works properly only on smartphone). 
 
+## Command list
+
+login : Login to the scheduler using Google Account.
+verify : Verify your login information.
+
 ## Scheduler
 TODO: in progress.
