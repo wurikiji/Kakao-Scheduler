@@ -4,10 +4,11 @@ This project implements the kakaotalk's auto responser. Based on `django`,
 
 This project is tested on `django 1.10`, `jQuery 3.10`, **latest** `firebase`
 and **latest** `pyrebase`. `pyrebase` is a `firebase` wrapper for
-python[(link)](https://github.com/thisbejim/Pyrebase).
+python([link](https://github.com/thisbejim/Pyrebase)).
 
 Real server, which is built by this project, is running on ***Google Cloude Platform 
-Computing Engine***.
+Computing Engine***. If you want to test the real server, add [kakao-scheduler](http://plus.kakao.com/home/oojk1uqx)
+to your [KakaoTalk](http://www.kakao.com/talk/) account (kakao-scheduler link works properly only on smartphone). 
 
 ## Scheduler
 TODO: in progress.
