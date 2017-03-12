@@ -1,0 +1,24 @@
+<html>
+<head>
+{% load static %}
+<script type="text/javascript" src="{% static 'js/jquery.js'%}"> </script>
+<script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
+<script src="{% static 'firebase.js' %}"> </script>
+<div w3-include-html="{% static 'firebase.html' %}"></div>
+<!--
+<script type="text/javascript" src="{% static 'main.js' %}"> </script>
+-->
+<title>The First Page</title>
+</head>
+<body>
+<h1>The First Page : Success ^^</h1>
+<script type="text/javascript"> 
+function addButton() {
+	//var $ = djnago.jQuery;
+	$('body').append('<button> asdf </button');
+}
+window.onload=addButton;
+console.log("Did you see this?");
+</script>
+</body>
+</html>

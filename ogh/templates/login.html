@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+{% load static %}
+{% csrf_token %}
+<script type="text/javascript" src="{% static 'js/jquery.js'%}"> </script>
+<script src="https://www.gstatic.com/firebasejs/3.7.1/firebase.js"></script>
+<!--
+<script type="text/javascript" src="{% static 'main.js' %}"> </script>
+-->
+<title>Login with Google</title>
+</head>
+<body>
+
+
+<script type="text/javascript"> 
+var config = {                                                   
+apiKey: "AIzaSyCpPmAc8T4ZbRF9ye3d0i5CQmGlln9h5GY",               
+        authDomain: "friendlychat-63958.firebaseapp.com",        
+        databaseURL: "https://friendlychat-63958.firebaseio.com",
+        storageBucket: "friendlychat-63958.appspot.com",         
+        messagingSenderId: "51138195849"                         
+};                                                               
+
+
+var app = null;
+var database = null;
+var user = null;
+var userKey = "{{ key }}" ;
+
+
+function addUserIfNotExist()  {
+	database = firebase.database();
+	var ref = database.ref("schedulerAccounts/" + userKey);
+	console.log("Check if user is already in");
+	if (database && user) {
+		ref.once('value').then (
+			function(snapshot) { // already in the accounts list
+				val = snapshot.val();
+				if (val == null) {
+					ref.set( {
+						userName: user.displayName,
+						userMail: user.email,
+						userPhoto: user.photoURL, 
+					});
+				} else {
+					console.log("User name is " + val.userName);
+				}
+			}
+		);
+	}
+}
+
+function loginGoogle() {
+	app = firebase.initializeApp(config);                             
+	var auth = app.auth();                                                
+	user = auth.currentUser;                                          
+	var googleProvider = new firebase.auth.GoogleAuthProvider();          
+	if (user == null) {                                                   
+		auth.signInWithPopup(googleProvider).then(function(result) {      
+				user = result.user;                                       
+				alert("You are logged in as " + user.displayName);
+				addUserIfNotExist();
+			}, function(error) {                                              
+				if (error.code === 'auth/popup-closed-by-user') {             
+					alert("You closed the login popup without signing-in.");  
+				} else if (error.code == 'auth/popup-blocked') {              
+					alert("Popup is blocked.");                               
+				}                                                             
+			});                                                               
+	} else {                                                              
+		alert("<br>You are " + user.displayName + ".");
+	}                                                                     
+}
+function addButton() {
+	//var $ = djnago.jQuery;
+	$('body').append('<button id="signIn" onclick=loginGoogle()> Sign in With Google</button>');
+}
+window.onload=addButton;
+</script>
+</body>
+</html>
