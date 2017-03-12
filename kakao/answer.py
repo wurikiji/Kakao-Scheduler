@@ -66,7 +66,12 @@ def verify(userKey):
 def getAnswer(userKey, ctype, content): 
     result= {
         "message" : {
-            "text" : content + " is not a command. 'login' is only supported.", 
+            "text" : "'" + content + "' is not a command. Type 'help' " + 
+                    "to view the commands list.", 
+            "message_button" : {
+                "label": "Go to Help",
+                "url" : "https://github.com/wurikiji/Kakao-Scheduler",
+            },
         },
     }
     if content.lower() == STR_VERIFY.lower(): 
@@ -76,6 +81,15 @@ def getAnswer(userKey, ctype, content):
         result = {
             "message" : {
                 "text" : ";( ... Why?!",
+            },
+        }
+    elif content.lower() == "help":
+        result = {
+            "message" : {
+                "message_button" : {
+                    "label": "Go to Help",
+                    "url" : "https://github.com/wurikiji/Kakao-Scheduler",
+                },
             },
         }
 

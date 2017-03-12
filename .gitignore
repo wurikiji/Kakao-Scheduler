@@ -92,3 +92,4 @@ ENV/
 *.pys
 *.json
 *.sqlite3
+*.swp
