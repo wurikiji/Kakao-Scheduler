@@ -12,8 +12,8 @@ to your [KakaoTalk](http://www.kakao.com/talk/) account (kakao-scheduler link wo
 
 ## Command list
 
-login : Login to the scheduler using Google Account.
-verify : Verify your login information.
+`login` : Login to the scheduler using ***Google Account***.<br>
+`verify` : Verify your login information.
 
 ## Scheduler
 TODO: in progress.
