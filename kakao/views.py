@@ -21,8 +21,8 @@ from kakao.getjson import *
 #
 
 def keyboard(request):
-	return JsonResponse({ "type":"buttons", 
-            "buttons" : ["button1", "button2"]})
+    
+	return JsonResponse(kakaoCommands)
 	#return JsonResponse({ "type":"text", })
 
 @csrf_exempt

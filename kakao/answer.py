@@ -3,7 +3,7 @@ import pyrebase
 from kakao.getjson import *
 
 
-STR_VERIFY = "Verify Login"
+STR_VERIFY = "Verify"
 STR_LOGIN = "login"
 STR_IGNORE = "Ignore"
 
@@ -18,7 +18,7 @@ config = {
 
 firebase = pyrebase.initialize_app(config)
 
-def signInWithGoogle(userKey, content):
+def signInWithGoogle(userKey, ctype, content):
     result = ""
     if ( STR_LOGIN.lower() == content.lower() ) :
         result = {
@@ -42,7 +42,7 @@ def signInWithGoogle(userKey, content):
 
 
 # verify login with firebase
-def verify(userKey): 
+def verify(userKey, ctype, content): 
     result = {
         "message" : {
             "text" : "You did not log in.", 
@@ -51,7 +51,7 @@ def verify(userKey):
     db = firebase.database()
     user = db.child("schedulerAccounts/" + userKey).get()
     data = user.val()
-    if len(data) != 0:
+    if data:
         result = {
             "message" : {
                 "text" : "Your email is " + data['userMail'] + "." +
@@ -62,43 +62,82 @@ def verify(userKey):
 
     return result
 
-# get answer to users question 
-def getAnswer(userKey, ctype, content): 
+kakaoCommands= {
+    "type" : "buttons",
+    "buttons" : [
+        "HELP", "LOGIN", "VERIFY",
+        "?",
+    ]
+}
+
+def showCommands(userKey, ctype, content) :
+    ret = {
+        "message" : {
+            "text" : "Select one of the commands.",
+        },
+        "keyboard" : kakaoCommands    }
+    return ret
+
+def defaultAnswer(userKey, ctype, content): 
     result= {
         "message" : {
             "text" : "'" + content + "' is not a command. Type 'help' " + 
-                    "to view the commands list.", 
+                    "to view the details." + 
+                    "\nIf you hurry, use 1:1 chat service.", 
             "message_button" : {
                 "label": "Go to Help",
                 "url" : "https://github.com/wurikiji/Kakao-Scheduler",
             },
         },
+        "keyboard" : {
+            "type" : "buttons",
+            "buttons": [
+                "help",
+                "?",
+            ]
+        }
     }
-    if content.lower() == STR_VERIFY.lower(): 
-        print "Verifying user identification"
-        result = verify(userKey)
-    elif content.lower() == STR_IGNORE.lower():
+    if content.lower() == STR_IGNORE.lower():
         result = {
             "message" : {
                 "text" : ";( ... Why?!",
             },
         }
-    elif content.lower() == "help":
-        result = {
-            "message" : {
-                "message_button" : {
-                    "label": "Go to Help",
-                    "url" : "https://github.com/wurikiji/Kakao-Scheduler",
-                },
-            },
-        }
-
     return result
 
-def getResult(userKey, ctype, content):
-    result = signInWithGoogle(userKey, content)
+def getHelp(userKey, ctype, content):
+    result = {
+        "message" : {
+            "text" : "Type '?' to show commands.",
+            "message_button" : {
+                "label": "Go to Homepage",
+                "url" : "https://github.com/wurikiji/Kakao-Scheduler",
+            },
+        },
+        "keyboard" : {
+            "type": "buttons",
+            "buttons" : [
+                "?", 
+            ]
+        }
+    }
+    return result
 
-    if len(result) == 0 :
-        result = getAnswer(userKey, ctype, content)
+funcDict = {
+    "?" : showCommands,
+    STR_VERIFY.lower(): verify,
+    STR_LOGIN.lower(): signInWithGoogle,
+    "help" : getHelp,
+}
+
+def getResult(userKey, ctype, content):
+    result = {
+        "message" : {
+            "text" : "Thank you for your image :).",
+        }
+    }
+    if (ctype == "text") :
+        func = funcDict.get(content.lower(), defaultAnswer)
+        result = func(userKey, ctype, content)
 
     return JsonResponse(result)

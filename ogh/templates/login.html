@@ -51,32 +51,47 @@ function addUserIfNotExist()  {
 	}
 }
 
+
+var lDone = false;
 function loginGoogle() {
 	app = firebase.initializeApp(config);                             
 	var auth = app.auth();                                                
 	user = auth.currentUser;                                          
 	var googleProvider = new firebase.auth.GoogleAuthProvider();          
+	$('body').append('<br>Logging in....');
+	$('body').append("Please wait until login is completed.");
 	if (user == null) {                                                   
 		auth.signInWithPopup(googleProvider).then(function(result) {      
 				user = result.user;                                       
 				alert("You are logged in as " + user.displayName);
 				addUserIfNotExist();
+				$('body').append('<br>Success!! Now you can close this popup.');
+				lDone = true;
 			}, function(error) {                                              
 				if (error.code === 'auth/popup-closed-by-user') {             
 					alert("You closed the login popup without signing-in.");  
 				} else if (error.code == 'auth/popup-blocked') {              
 					alert("Popup is blocked.");                               
 				}                                                             
+				$('body').append('<br>Failed!! Please, refresh this page.');
+				lDone = true;
 			});                                                               
 	} else {                                                              
-		alert("<br>You are " + user.displayName + ".");
+		alert("You are " + user.displayName + ".");
 	}                                                                     
+	alert("Please wait until login is completed.");
+/*	
+	while (lDone === false) {
+		$('body').append('.');
+		await sleep(500);
+	}
+	*/
 }
 function addButton() {
 	//var $ = djnago.jQuery;
 	$('body').append('<button id="signIn" onclick=loginGoogle()> Sign in With Google</button>');
 }
-window.onload=addButton;
+window.onload=loginGoogle;
 </script>
 </body>
 </html>
