@@ -1,22 +1,9 @@
 from django.http import JsonResponse 
-import pyrebase
 from kakao.getjson import *
+from kakao.firebase import * 
+from kakao.private import * 
 
-
-STR_VERIFY = "Verify"
-STR_LOGIN = "login"
-STR_IGNORE = "Ignore"
-
-config = {
-  "apiKey": "AIzaSyCpPmAc8T4ZbRF9ye3d0i5CQmGlln9h5GY",
-  "authDomain": "friendlychat-63958.firebaseapp.com",
-  "databaseURL": "https://friendlychat-63958.firebaseio.com",
-  "storageBucket": "friendlychat-63958.appspot.com",
-  "messagingSenderId": "51138195849",
-  "serviceAccount": "/home/ogh/work/tapache/ogh/firebase-key.json",
-}
-
-firebase = pyrebase.initialize_app(config)
+firebase = loginFirebase();
 
 def signInWithGoogle(userKey, ctype, content):
     result = ""
@@ -49,7 +36,7 @@ def verify(userKey, ctype, content):
         },
     }
     db = firebase.database()
-    user = db.child("schedulerAccounts/" + userKey).get()
+    user = db.child("schedulerAccounts").child(userKey).get()
     data = user.val()
     if data:
         result = {
@@ -63,13 +50,16 @@ def verify(userKey, ctype, content):
     return result
 
 kakaoCommands= {
+    "type" : "text",
+}
+
+kakaoCommands2= {
     "type" : "buttons",
     "buttons" : [
         "HELP", "LOGIN", "VERIFY",
         "?",
     ]
 }
-
 def showCommands(userKey, ctype, content) :
     ret = {
         "message" : {
@@ -84,18 +74,7 @@ def defaultAnswer(userKey, ctype, content):
             "text" : "'" + content + "' is not a command. Type 'help' " + 
                     "to view the details." + 
                     "\nIf you hurry, use 1:1 chat service.", 
-            "message_button" : {
-                "label": "Go to Help",
-                "url" : "https://github.com/wurikiji/Kakao-Scheduler",
-            },
         },
-        "keyboard" : {
-            "type" : "buttons",
-            "buttons": [
-                "help",
-                "?",
-            ]
-        }
     }
     if content.lower() == STR_IGNORE.lower():
         result = {
@@ -109,10 +88,6 @@ def getHelp(userKey, ctype, content):
     result = {
         "message" : {
             "text" : "Type '?' to show commands.",
-            "message_button" : {
-                "label": "Go to Homepage",
-                "url" : "https://github.com/wurikiji/Kakao-Scheduler",
-            },
         },
         "keyboard" : {
             "type": "buttons",
@@ -128,6 +103,8 @@ funcDict = {
     STR_VERIFY.lower(): verify,
     STR_LOGIN.lower(): signInWithGoogle,
     "help" : getHelp,
+    "@" : privateMenu,
+    "#" : loginGroup,
 }
 
 def getResult(userKey, ctype, content):
@@ -137,7 +114,11 @@ def getResult(userKey, ctype, content):
         }
     }
     if (ctype == "text") :
-        func = funcDict.get(content.lower(), defaultAnswer)
+        command = content
+        if content[0] == '#' or content[0] == '@':
+            command = content[0]
+
+        func = funcDict.get(command.lower(), defaultAnswer)
         result = func(userKey, ctype, content)
 
     return JsonResponse(result)

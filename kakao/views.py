@@ -20,6 +20,7 @@ from kakao.getjson import *
 #   "buttons" : ["Button1", "button2", "Button3"]}
 #
 
+@csrf_exempt
 def keyboard(request):
     
 	return JsonResponse(kakaoCommands)
